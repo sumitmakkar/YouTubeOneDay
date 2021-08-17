@@ -9,9 +9,13 @@ import UIKit
 
 class ViewController: UIViewController
 {
+    // MARK: - Properties
+    var model = Model()
+    
+    // MARK: - Lifecycle Methods
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        view.backgroundColor = .green
+        model.getVideos()
     }
 }
