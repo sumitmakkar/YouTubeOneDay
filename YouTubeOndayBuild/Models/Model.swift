@@ -7,8 +7,15 @@
 
 import Foundation
 
+protocol ModelDelegate
+{
+    func videosFetched(_ videos: [Video])
+}
+
 class Model
 {
+    var delegate: ModelDelegate?
+    
     func getVideos()
     {
         //1. Create URL Object
@@ -18,7 +25,8 @@ class Model
         let session = URLSession.shared
         
         //3. Get a Data Task from the URLSession Object
-        let datatask = session.dataTask(with: url) { (data, response, error) in
+        let dataTask = session.dataTask(with: url) { [weak self] (data, response, error) in
+            guard let weakSelf = self else { return }
             if error != nil || data == nil
             {
                 debugPrint("API ERROR: \(error?.localizedDescription)")
@@ -32,6 +40,9 @@ class Model
                 decoder.dateDecodingStrategy = .iso8601
                 let response                 = try decoder.decode(Response.self, from: data!)
                 dump(response)
+                
+                guard let videos = response.items else { return }
+                weakSelf.delegate?.videosFetched(videos)
             }
             catch
             {
@@ -41,6 +52,6 @@ class Model
         }
         
         //5. Kick off the task
-        datatask.resume()
+        dataTask.resume()
     }
 }
