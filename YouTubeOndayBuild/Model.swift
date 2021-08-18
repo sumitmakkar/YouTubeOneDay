@@ -24,9 +24,23 @@ class Model
                 debugPrint("API ERROR: \(error?.localizedDescription)")
                 return
             }
+            
+            //4. Parse data into Video object
+            do
+            {
+                let decoder                  = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
+                let response                 = try decoder.decode(Response.self, from: data!)
+                dump(response)
+            }
+            catch
+            {
+                debugPrint("PARSING ERROR: for Youtube API")
+            }
+            
         }
         
-        //4. Kick off the task
+        //5. Kick off the task
         datatask.resume()
     }
 }
